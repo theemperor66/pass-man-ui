@@ -1,0 +1,24 @@
+extends layout
+
+block content
+    if error != null
+        div(class="container")
+            div(class="alert alert-danger") Error: #{error}
+
+    div(class="row")
+        div(class="col col-lg-4")
+            form(action="/register", method="post")
+                div(class="form-group")
+                    label(for="inputEmail") Email:
+                    input(type="text" class="form-control", id="inputUsername", placeholder="Nutzername", name="usernameField")
+                div(class="form-group")
+                    label(for="inputEmail") Email:
+                    input(type="email" class="form-control", id="inputEmail", placeholder="Email", name="emailField")
+                div(class="form-group")
+                    label(for="inputPassword") Passwort:
+                    input(type="password" class="form-control", id="inputPassword", placeholder="Passwort", name="passwordField")
+                div(class="form-group")
+                    label(for="inputPasswordConfirmation") Passwort bestätigen:
+                    input(type="password" class="form-control", id="inputPasswordConfirmation", placeholder="Passwort bestätigen", name="passwordConfirmationField")
+                div(class="form-group")
+                    button(type="submit" class="btn btn-primary") Registrieren

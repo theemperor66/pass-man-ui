@@ -1,0 +1,25 @@
+extends layout
+
+block content
+    div(class="row")
+        div(class="col")
+            img(src="lock.png")
+        if user == null
+            div(class="col")
+                if error != null
+                    div(class="container")
+                        div(class="alert alert-danger") Error: #{error}
+                form(action="/login", method="post")
+                    div(class="form-group")
+                        label(for="inputUsername") Nutzername:
+                        input(type="text" class="form-control", id="inputUsername", placeholder="Nutzernamen eingeben", name="usernameField")
+                        div(class="form-group")
+                    div(class="form-group")
+                        label(for="inputPassword") Passwort:
+                        input(type="password" class="form-control", id="inputPassword", placeholder="Passwort eingeben", name="passwordField")
+                    div(class="form-group")
+                        button(type="submit", class="btn btn-primary") Login
+        if user != null
+            div(class="col")
+                div(class="container")
+                    div(class="alert alert-primary") Willkommen zu PassMan #{user.firstname} #{user.lastname}!
