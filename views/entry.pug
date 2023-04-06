@@ -3,30 +3,29 @@ extends layout
 block content
     h1 Eintrag
     div(class="row border border-secondary p-2 m-2")
-        div(class="row justify-content-between")
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                h4 Bezeichnung
-                input(type="text" id="name" name="name" value="Bezeichnung")
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                h4 Nutzername
-                input(type="text" id="username" name="username" value="Nutzername")
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                h4 Passwort
-                input(type="password" id="password" name="password" value="Passwort")
-                label(for="visibilityCheck") Passwort anzeigen
-                input(class="form-check-input" type="checkbox" id="visibilityCheck" name="visibilityCheck" onclick="toggleVisibility()")
-                button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Adressen
-                    input(type="text" id="addresses" name="addresses" value="Adressen")
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Notizen
-                    input(type="text" id="notes" name="notes" value="Notizen")
-
-        button(class="btn btn-primary my-1" onclick="save()") Speichern
-
-        a(href="/dashboard")
-            button(class="btn btn-secondary") Abbrechen
+        form(action="/editPassword/"+entryData.id method="post")
+            div(class="row justify-content-between")
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                    h4 Bezeichnung
+                    input(type="text" id="name" name="name" value=entryData.name)
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                    h4 Nutzername
+                    input(type="text" id="username" name="username" value=entryData.userName)
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                    h4 Passwort
+                    input(type="password" id="password" name="password" value=entryData.password)
+                    label(for="visibilityCheck") Passwort anzeigen
+                    input(class="form-check-input" type="checkbox" id="visibilityCheck" name="visibilityCheck" onclick="toggleVisibility()")
+                    button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                        h4 Adressen
+                        input(type="text" id="addresses" name="addresses" value=entryData.urls)
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                        h4 Notizen
+                        input(type="text" id="notes" name="notes" value=entryData.annots)
+            button(type="submit", class="btn btn-primary") Speichern
+            a(href="/dashboard")
+                button(class="btn btn-secondary") Abbrechen
 
     script.
         function toggleVisibility() {

@@ -2,28 +2,32 @@ extends layout
 
 block content
     h1 Dashboard
-    div(class="row border border-secondary p-2 m-2")
-        div(class="row justify-content-between")
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                h4 Bezeichnung
-                p Bezeichnung
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                h4 Nutzername
-                p Nutzername
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                h4 Passwort
-                input(type="password" id="password" name="password" value="Passwort")
-                label(for="visibilityCheck") Passwort anzeigen
-                input(class="form-check-input" type="checkbox" id="visibilityCheck" name="visibilityCheck" onclick="toggleVisibility()" contenteditable=false)
-                button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                h4 Adressen
-                p Adressen
-            div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                h4 Notizen
-                p Notizen
-        a(href="/entry" class="text-decoration-none")
-            button(class="btn btn-secondary mt-1") Bearbeiten
+    if entries!=null
+        each entry in entries
+        div(class="row border border-secondary p-2 m-2")
+            div(class="row justify-content-between")
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                    h4 Bezeichnung
+                    p #{entry.name}
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                    h4 Nutzername
+                    p #{entry.username}
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                    h4 Passwort
+                    input(type="password" id="password" name="password" value=entry.password)
+                    label(for="visibilityCheck") Passwort anzeigen
+                    input(class="form-check-input" type="checkbox" id="visibilityCheck" name="visibilityCheck" onclick="toggleVisibility()" contenteditable=false)
+                    button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                    h4 Adressen
+                    p #{entry.urls}
+                div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                    h4 Notizen
+                    p #{entry.annots}
+            a(href="/entry/"+entry.id class="text-decoration-none")
+                button(class="btn btn-secondary mt-1") Bearbeiten
+
+
     form(action="/addPassword" method="post")
         div(class="row mx-1")
             div(class="col")
@@ -43,6 +47,8 @@ block content
                 input(type="text", class="form-control" id="inputAnnot" placeholder="Nutzername" name="annotField")
         div(class="form-group mx-3 my-1")
             button(type="submit", class="btn btn-primary") Passwort hinzufügen
+
+
     script.
         function toggleVisibility() {
             if(document.getElementById("visibilityCheck").checked) {

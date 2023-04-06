@@ -9,9 +9,15 @@ const saltRounds = 10;
 
 const axios = require("axios");
 const path = require("path");
-const url = "http://127.0.0.1:80"
+const url = "http://127.0.0.1:80";
 require('whatwg-fetch');
 
+
+const tough = require('tough-cookie');
+const { promisify } = require('util');
+
+
+const passmanLibrary=require('./passmanLibrary');
 
 /* Reading global variables from config file */
 dotenv.config();
@@ -24,6 +30,9 @@ const urlencodedParser = bodyParser.urlencoded({
     extended: false
 });
 
+const cookieJar = new tough.CookieJar();
+
+
 app.use(session({
     secret: "Das ist geheim!",
     resave: true,
@@ -31,7 +40,6 @@ app.use(session({
 }));
 
 //utility
-
 function generatePassword(length, uppercase, digits, symbols, excludeSimilar, excludeChars) {
     let chars = [];
     if (uppercase > 0) chars.push(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
@@ -78,38 +86,31 @@ app.get('/startpage', function (req, res) {
 });
 
 app.get("/dashboard", function (req, res) {
-    const data = {
-        userID: 2
-    };
+    passmanLibrary.getPasswordEntries().then(r => {
 
-    axios.post(url + "/getPasswordEntries", data)
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    })
 
     res.redirect("/dashboard");
 });
 
-app.get("/entry/:id", function(req, res) {
-    const data = {
-        domain: req.body.domainField,
-        annot: req.body.annotField,
-        passwordEncrypted: req.body.passwordField,
-        //username:
-    };
-
-    axios.post(url + "/", data)
-        .then(response => {
-            console.log(response.data);
+app.get("/entry/:eId", function(req, res) {
+    const id = req.params.id;
+    let passwordEntry;
+    passmanLibrary.getPasswordById(id).then(r => {
+        passwordEntry = r.data.map(entry => {
+            return {
+                id: r.id,
+                username: r.username,
+                password: r.passwordEncrypted,
+                urls: r.domain,
+                annot: r.annot
+            }
         })
-        .catch(error => {
-            console.error(error);
-        });
+    });
 
-    res.render("entry");
+    res.render("entry", {
+        entryData: passwordEntry
+    });
 });
 
 app.post("/updateEntry/:id", function(req, res) {
@@ -119,53 +120,40 @@ app.post("/updateEntry/:id", function(req, res) {
 });
 
 app.post("/addEntry", urlencodedParser, function (req, res) {
-    const data = {
-        domain: req.body.domainField,
-        annot: req.body.annotField,
-        passwordEncrypted: req.body.passwordField,
-        username: req.body.usernameField
-    };
+    const domain = req.body.domainField;
+    const annot = req.body.annotField;
+    const passwordEncrypted = req.body.passwordField;
+    const username = req.body.usernameField;
 
-    axios.post(url + "/deletePasswordEntry", data)
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    passmanLibrary.addPasswordEntry(domain, username, passwordEncrypted, annot);
 
     res.redirect("/dashboard");
 });
 
 app.post("/deleteEntry/:id", urlencodedParser, function (req, res) {
     let entryId=req.params.id;
-    const data = {id: entryId};
 
-    axios.post(url + "/deletePasswordEntry", data)
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    passmanLibrary.deletePasswordEntry(id);
+
     res.redirect("/dashboard");
 });
 
 app.post("/login", urlencodedParser, function (req, res) {
-    const data = {
-        username: req.body.usernameField,
-        passwordHash: req.body.passwordField
-    };
+    let username = req.body.usernameField;
+    let passwordHash = req.body.passwordField;
 
-    axios.post(url + "/login", data)
-        .then(response => {
-            console.log(response.data);
-        })
-        .catch(error => {
-            console.error(error);
-        });
+    passmanLibrary.login(username, passwordHash).then(r => {
+        console.log(r.data.userId);
+        req.session.user = {
+            userId: r.data.userId
+        }
+        req.session.cookie = {
+            expires: r.data.expireTimestamp
+        }
+    });
 
-
+    console.log(req.session.user);
+    console.log(req.session.cookie.expires);
 
     res.redirect("/startpage");
 });
@@ -186,11 +174,17 @@ app.post("/register", urlencodedParser, function (req, res) {
         })
     }
     else {
-        const data = {
-            username: username,
-            email: email,
-            passwordHash: passwordHash
-        };
+        passmanLibrary.register(username, email, passwordHash).then(r => {
+            const uId = r.data.userId
+            req.session.user = {
+                userId: uId
+            }
+            req.session.cookie = {
+                expires: r.data.expireTimestamp
+            }
+        });
+
+        res.redirect("/dashboard");
     }
 });
 
