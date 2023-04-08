@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 const host = 'http://localhost:80'; // Replace this with your desired host
+axios.defaults.withCredentials = true
 
 async function register(username, email, passwordHash) {
     try {
@@ -13,18 +14,23 @@ async function register(username, email, passwordHash) {
 async function login(username, passwordHash) {
     try {
         const response = await axios.post(`${host}/login`, { username, passwordHash }, { withCredentials: true });
-        return response;
+        // get Set-Cookie header from response
+        const cookie = response.headers['set-cookie'][0];
+        // set session id in cookie
+        return cookie
     } catch (error) {
         console.error(error);
         throw new Error(`Error logging in: ${error.response.statusText}`);
     }
 }
 
-async function getPasswordEntries() {
+async function getPasswordEntries(session_cookie) {
     try {
-        const response = await axios.get(`${host}/getPasswordEntries`, { withCredentials: true });
+        // do axios get with session cookie
+        const response = await axios.get(`${host}/getPasswordEntries`, { withCredentials: true, headers: { Cookie: session_cookie } });
         return response.data;
     } catch (error) {
+        console.log(session_cookie)
         throw new Error(`Error fetching password entries: ${error.response.statusText}`);
     }
 }
