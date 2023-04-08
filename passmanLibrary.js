@@ -35,9 +35,9 @@ async function getPasswordEntries(session_cookie) {
     }
 }
 
-async function addPasswordEntry(domain, username, passwordEncrypted, annotation) {
+async function addPasswordEntry(domain, username, passwordEncrypted, annotation, session_cookie) {
     try {
-        await axios.post(`${host}/addPasswordEntry`, { domain, username, passwordEncrypted, annotation }, { withCredentials: true });
+        await axios.post(`${host}/addPasswordEntry`, { domain, username, passwordEncrypted, annotation }, { withCredentials: true, headers: { Cookie: session_cookie } });
     } catch (error) {
         throw new Error(`Error adding password entry: ${error.response.statusText}`);
     }
@@ -45,25 +45,25 @@ async function addPasswordEntry(domain, username, passwordEncrypted, annotation)
 
 async function searchPasswordEntries(domain) {
     try {
-        const response = await axios.post(`${host}/searchPasswordEntries`, { domain }, { withCredentials: true });
+        const response = await axios.post(`${host}/searchPasswordEntries`, { domain }, { withCredentials: true, headers: { Cookie: session_cookie } });
         return response.data;
     } catch (error) {
         throw new Error(`Error searching password entries: ${error.response.statusText}`);
     }
 }
 
-async function getPasswordById(id) {
+async function getPasswordById(id, session_cookie) {
     try {
-        const response = await axios.post(`${host}/getPasswordById`, { id }, { withCredentials: true });
+        const response = await axios.post(`${host}/getPasswordById`, { id }, { withCredentials: true, headers: { Cookie: session_cookie } });
         return response.data;
     } catch (error) {
         throw new Error(`Error fetching password entry: ${error.response.statusText}`);
     }
 }
 
-async function deletePasswordEntry(id) {
+async function deletePasswordEntry(id, session_cookie) {
     try {
-        await axios.post(`${host}/deletePasswordEntry`, { id }, { withCredentials: true });
+        await axios.post(`${host}/deletePasswordEntry`, { id }, { withCredentials: true, headers: { Cookie: session_cookie } });
     } catch (error) {
         throw new Error(`Error deleting password entry: ${error.response.statusText}`);
     }

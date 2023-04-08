@@ -4,49 +4,66 @@ block content
     h1 Dashboard
     if entries!=null
         each entry in entries
-        div(class="row border border-secondary p-2 m-2")
-            div(class="row justify-content-between")
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Bezeichnung
-                    p #{entry.name}
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Nutzername
-                    p #{entry.username}
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Passwort
-                    input(type="password" id="password" name="password" value=entry.password)
-                    label(for="visibilityCheck") Passwort anzeigen
-                    input(class="form-check-input" type="checkbox" id="visibilityCheck" name="visibilityCheck" onclick="toggleVisibility()" contenteditable=false)
-                    button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Adressen
-                    p #{entry.urls}
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Notizen
-                    p #{entry.annots}
-            a(href="/entry/"+entry.id class="text-decoration-none")
-                button(class="btn btn-secondary mt-1") Bearbeiten
+            div(class="row border border-secondary p-2 m-2")
+                div(class="row justify-content-between")
+                    div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                        h4 Nutzername
+                        p #{entry.username}
+                    div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                        h4 Passwort
+                        input(type="password" id="password" name="password" value=entry.password)
+                        label(for="visibilityCheck") Passwort anzeigen
+                        input(class="form-check-input" type="checkbox" id="visibilityCheck" name="visibilityCheck" onclick="toggleVisibility()" contenteditable=false)
+                        button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
+                    div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                        h4 Adressen
+                        p #{entry.urls}
+                    div(class="col col-lg-2 bg-dark text-white rounded p-3")
+                        h4 Notizen
+                        p #{entry.annots}
+                a(href="/entry/"+entry.id class="text-decoration-none")
+                    button(class="btn btn-secondary mt-1") Bearbeiten
 
 
-    form(action="/addPassword" method="post")
+    form(action="/addEntry" method="post")
         div(class="row mx-1")
-            div(class="col")
-                label(for="inputUsername") Bezeichnung
-                input(type="text", class="form-control" id="inputName" placeholder="Nutzername" name="nameField")
             div(class="col")
                 label(for="inputUsername") Nutzername
                 input(type="text", class="form-control" id="inputUsername" placeholder="Nutzername" name="usernameField")
             div(class="col")
                 label(for="inputUsername") Passwort
-                input(type="text", class="form-control" id="inputPassword" placeholder="Nutzername" name="passwordField")
+                input(type="text", class="form-control" id="inputPassword" placeholder="Passwort" name="passwordField")
             div(class="col")
                 label(for="inputDomains") URLs
-                input(type="text", class="form-control" id="inputDomains" placeholder="Nutzername" name="domainField")
+                input(type="text", class="form-control" id="inputDomains" placeholder="URLs" name="domainField")
             div(class="col")
                 label(for="inputUsername") Notizen
-                input(type="text", class="form-control" id="inputAnnot" placeholder="Nutzername" name="annotField")
+                input(type="text", class="form-control" id="inputAnnot" placeholder="Notizen" name="annotField")
         div(class="form-group mx-3 my-1")
             button(type="submit", class="btn btn-primary") Passwort hinzufügen
+
+    form
+        div(class="form-row")
+            div(class="form-group col-md-5")
+                label(for="inputLength") Password length
+                input(type="number" class="form-control" id="inputLength" placeholder="Length" value=16 min=4 max=128)
+            div(class="form-group col-md-5")
+                label(for="excludedChars") Characters to exclude
+                input(type="text" class="form-control" id="excludedChars" placeholder="Characters to exclude")
+        div(class="form-group")
+            div(class="form-check")
+                input(class="form-check-input" type="checkbox" id="capitalCheck" checked)
+                label(class="form-check-label" for="capitalCheck") Capital Letters
+            div(class="form-check")
+                input(class="form-check-input" type="checkbox" id="digitCheck" checked)
+                label(class="form-check-label" for="digitCheck") Digits
+            div(class="form-check")
+                input(class="form-check-input" type="checkbox" id="symbolCheck" checked)
+                label(class="form-check-label" for="symbolCheck") Special Characters
+            div(class="form-check")
+                input(class="form-check-input" type="checkbox" id="ambiguousCheck")
+                label(class="form-check-label" for="ambiguousCheck") Avoid ambiguous
+        button(type="button" class="btn btn-primary" value="click" onclick="generatePassword()") Generate
 
 
     script.
@@ -61,4 +78,45 @@ block content
 
         function copyPassword() {
             navigator.clipboard.writeText(document.getElementById("password").value);
+        }
+
+        function generatePassword() {
+            let length = document.getElementById("inputLength").value;
+            let exclude = document.getElementById("excludedChars").value;
+            let capital = document.getElementById("capitalCheck").checked;
+            let digits = document.getElementById("digitCheck").checked;
+            let symbols = document.getElementById("symbolCheck").checked;
+            let avoidAmbiguous = document.getElementById("ambiguousCheck").checked;
+
+            if (length > 128) {
+                length = 128;
+                alert("Maximum Length is 128");
+            }
+
+            let chars = [];
+            chars.push(...'abcdefghijklmnopqrstuvwxyz');
+            if (capital) {
+                chars.push(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+            }
+            if (digits) {
+                chars.push(...'0123456789');
+            }
+            if (symbols) {
+                chars.push(...'!"§$%&/()=?{[]}+*~#,;.:-_<>');
+            }
+            if (avoidAmbiguous) {
+                chars = chars.filter((char) => !['I', 'l', '1', 'O', '0'].includes(char));
+            }
+            chars = chars.filter((char) => !exclude.includes(char));
+
+            let password = "";
+
+            for (let i = 0; i < length; i++) {
+                password = password + chars[Math.floor(Math.random() * (chars.length - 1 - 1))];
+            }
+
+            document.getElementById("inputPassword").value = password;
+
+            console.log(password);
+            return password;
         }
