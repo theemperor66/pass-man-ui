@@ -47,42 +47,37 @@ app.get("/dashboard", function (req, res) {
     let entries = [];
     passmanLibrary.getPasswordEntries(session).then(r => {
         console.log(r);
-
-        for(let i= 0; i<r.data.length; i++) {
-            entries[i] = r.data.map(entry => {
-                return {
-                    id: entry.id,
-                    username: entry.username,
-                    password: entry.passwordEncrypted,
-                    urls: entry.domain,
-                    annot: entry.annot
+        for(let i= 0; i<r.length; i++) {
+            entries[i] = {
+                    eid: r[i].id,
+                    username: r[i].username,
+                    password: r[i].passwordEncrypted,
+                    urls: r[i].domain,
+                    annot: r[i].annot
                 }
-            })
-        }
-    })
+            }
 
-    res.render("dashboard", {
-        entries: entries
-    });
+        res.render("dashboard", {
+            entries: entries
+        });
+    })
 });
 
 app.get("/entry/:eId", function(req, res) {
-    const id = req.params.id;
-    let passwordEntry;
+    const id = req.params.eId;
+    let entryData;
     passmanLibrary.getPasswordById(id, session).then(r => {
-        passwordEntry = r.data.map(entry => {
-            return {
-                id: entry.id,
-                username: entry.username,
-                password: entry.passwordEncrypted,
-                urls: entry.domain,
-                annot: entry.annot
-            }
-        })
-    });
+        entryData = {
+            eid: r.id,
+            username: r.username,
+            password: r.passwordEncrypted,
+            urls: r.domain,
+            annot: r.annot
+        }
 
-    res.render("entry", {
-        entryData: passwordEntry
+        res.render("entry", {
+            entryData: entryData
+        });
     });
 });
 
@@ -98,9 +93,14 @@ app.post("/addEntry", urlencodedParser, function (req, res) {
     const passwordEncrypted = req.body.passwordField;
     const username = req.body.usernameField;
 
-    passmanLibrary.addPasswordEntry(domain, username, passwordEncrypted, annot, session);
+    console.log("domain: " + domain);
+    console.log("annot: " + annot);
+    console.log("passwordEncrypted: " + passwordEncrypted);
+    console.log("username: " + username);
 
-    res.redirect("/dashboard");
+    passmanLibrary.addPasswordEntry(domain, username, passwordEncrypted, annot, session).then(r =>
+        res.redirect("/dashboard")
+    );
 });
 
 app.post("/deleteEntry/:id", urlencodedParser, function (req, res) {
@@ -117,10 +117,9 @@ app.post("/login", urlencodedParser, function (req, res) {
 
     // login and set session
     passmanLibrary.login(username, passwordHash).then(r => {
-        session=r});
-
-    res.redirect("/dashboard");
-
+        session=r;
+        res.redirect("/dashboard");
+    });
 });
 
 app.get("/register", function (req, res) {
@@ -139,11 +138,13 @@ app.post("/register", urlencodedParser, function (req, res) {
         })
     }
     else {
-        passmanLibrary.register(username, email, passwordHash);
+        passmanLibrary.register(username, email, passwordHash).then(rs => {
+                passmanLibrary.login(username, passwordHash).then(r => {
+                    session=r;
+                    res.redirect("/dashboard");
+                })
+        });
 
-        passmanLibrary.login(username, passwordHash);
-
-        res.redirect("/dashboard");
     }
 });
 

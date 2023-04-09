@@ -35,9 +35,9 @@ async function getPasswordEntries(session_cookie) {
     }
 }
 
-async function addPasswordEntry(domain, username, passwordEncrypted, annotation, session_cookie) {
+async function addPasswordEntry(domain, username, passwordEncrypted, annot, session_cookie) {
     try {
-        await axios.post(`${host}/addPasswordEntry`, { domain, username, passwordEncrypted, annotation }, { withCredentials: true, headers: { Cookie: session_cookie } });
+        await axios.post(`${host}/addPasswordEntry`, { domain, username, passwordEncrypted, annot }, { withCredentials: true, headers: { Cookie: session_cookie } });
     } catch (error) {
         throw new Error(`Error adding password entry: ${error.response.statusText}`);
     }

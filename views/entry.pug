@@ -3,11 +3,11 @@ extends layout
 block content
     h1 Eintrag
     div(class="row border border-secondary p-2 m-2")
-        form(action="/editPassword/"+entryData.id method="post")
+        form(action="/editPassword/"+entryData.eid method="post")
             div(class="row justify-content-between")
                 div(class="col col-lg-2 bg-dark text-white rounded p-3")
                     h4 Nutzername
-                    input(type="text" id="username" name="username" value=entryData.userName)
+                    input(type="text" id="username" name="username" value=entryData.username)
                 div(class="col col-lg-2 bg-dark text-white rounded p-3")
                     h4 Passwort
                     input(type="password" id="password" name="password" value=entryData.password)
@@ -19,7 +19,7 @@ block content
                         input(type="text" id="addresses" name="addresses" value=entryData.urls)
                 div(class="col col-lg-2 bg-dark text-white rounded p-3")
                         h4 Notizen
-                        input(type="text" id="notes" name="notes" value=entryData.annots)
+                        input(type="text" id="notes" name="notes" value=entryData.annot)
             button(type="submit", class="btn btn-primary") Speichern
             a(href="/dashboard")
                 button(class="btn btn-secondary") Abbrechen
@@ -59,4 +59,45 @@ block content
 
         function copyPassword() {
             navigator.clipboard.writeText(document.getElementById("password").value);
+        }
+
+        function generatePassword() {
+            let length = document.getElementById("inputLength").value;
+            let exclude = document.getElementById("excludedChars").value;
+            let capital = document.getElementById("capitalCheck").checked;
+            let digits = document.getElementById("digitCheck").checked;
+            let symbols = document.getElementById("symbolCheck").checked;
+            let avoidAmbiguous = document.getElementById("ambiguousCheck").checked;
+
+            if (length > 128) {
+                length = 128;
+                alert("Maximum Length is 128");
+            }
+
+            let chars = [];
+            chars.push(...'abcdefghijklmnopqrstuvwxyz');
+            if (capital) {
+                chars.push(...'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+            }
+            if (digits) {
+                chars.push(...'0123456789');
+            }
+            if (symbols) {
+                chars.push(...'!"§$%&/()=?{[]}+*~#,;.:-_<>');
+            }
+            if (avoidAmbiguous) {
+                chars = chars.filter((char) => !['I', 'l', '1', 'O', '0'].includes(char));
+            }
+            chars = chars.filter((char) => !exclude.includes(char));
+
+            let password = "";
+
+            for (let i = 0; i < length; i++) {
+                password = password + chars[Math.floor(Math.random() * (chars.length - 1 - 1))];
+            }
+
+            document.getElementById("password").value = password;
+
+            console.log(password);
+            return password;
         }
