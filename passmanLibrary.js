@@ -43,6 +43,14 @@ async function addPasswordEntry(domain, username, passwordEncrypted, annot, sess
     }
 }
 
+async function updatePasswordEntry(id, domain, username, annot, passwordEncrypted, session_cookie) {
+    try {
+        await axios.post(`${host}/updatePasswordEntry`, {id, domain, username, annot, passwordEncrypted }, { withCredentials: true, headers: { Cookie: session_cookie } });
+    } catch (error) {
+        throw new Error(`Error updating password entry: ${error.response.statusText}`);
+    }
+}
+
 async function searchPasswordEntries(domain) {
     try {
         const response = await axios.post(`${host}/searchPasswordEntries`, { domain }, { withCredentials: true, headers: { Cookie: session_cookie } });

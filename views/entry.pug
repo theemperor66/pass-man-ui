@@ -3,26 +3,29 @@ extends layout
 block content
     h1 Eintrag
     div(class="row border border-secondary p-2 m-2")
-        form(action="/editPassword/"+entryData.eid method="post")
+        form(action="/updateEntry/"+entryData.eid method="post")
             div(class="row justify-content-between")
                 div(class="col col-lg-2 bg-dark text-white rounded p-3")
                     h4 Nutzername
-                    input(type="text" id="username" name="username" value=entryData.username)
+                    input(type="text" class="form-control" id="usernameField" name="usernameField" value=entryData.username)
                 div(class="col col-lg-2 bg-dark text-white rounded p-3")
                     h4 Passwort
-                    input(type="password" id="password" name="password" value=entryData.password)
+                    input(type="password" class="form-control" id="passwordField" name="passwordField" value=entryData.password)
                     label(for="visibilityCheck") Passwort anzeigen
                     input(class="form-check-input" type="checkbox" id="visibilityCheck" name="visibilityCheck" onclick="toggleVisibility()")
                     button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
                 div(class="col col-lg-2 bg-dark text-white rounded p-3")
                         h4 Adressen
-                        input(type="text" id="addresses" name="addresses" value=entryData.urls)
+                        input(type="text" class="form-control" id="domainField" name="domainField" value=entryData.urls)
                 div(class="col col-lg-2 bg-dark text-white rounded p-3")
                         h4 Notizen
-                        input(type="text" id="notes" name="notes" value=entryData.annot)
+                        input(type="text" class="form-control" id="annotField" name="annotField" value=entryData.annot)
             button(type="submit", class="btn btn-primary") Speichern
             a(href="/dashboard")
                 button(class="btn btn-secondary") Abbrechen
+
+    form(action="/deleteEntry/"+entryData.eid method="post")
+        button(type="submit" class="btn btn-danger") Löschen
 
     form
         div(class="form-row")
@@ -47,18 +50,19 @@ block content
                 label(class="form-check-label" for="ambiguousCheck") Avoid ambiguous
         button(type="button" class="btn btn-primary" value="click" onclick="generatePassword()") Generate
 
+
     script.
         function toggleVisibility() {
             if(document.getElementById("visibilityCheck").checked) {
-                document.getElementById("password").type="text";
+                document.getElementById("passwordField").type="text";
             }
             else {
-                document.getElementById("password").type="password";
+                document.getElementById("passwordField").type="password";
             }
         }
 
         function copyPassword() {
-            navigator.clipboard.writeText(document.getElementById("password").value);
+            navigator.clipboard.writeText(document.getElementById("passwordField").value);
         }
 
         function generatePassword() {
