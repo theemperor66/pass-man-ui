@@ -2,27 +2,27 @@ extends layout
 
 block content
     h1 Eintrag
-    div(class="row border border-secondary p-2 m-2")
-        form(action="/updateEntry/"+entryData.eid method="post")
-            div(class="row justify-content-between")
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Nutzername
-                    input(type="text" class="form-control" id="usernameField" name="usernameField" value=entryData.username)
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                    h4 Passwort
-                    input(type="password" class="form-control" id="passwordField" name="passwordField" value=entryData.password)
-                    label(for="visibilityCheck") Passwort anzeigen
-                    input(class="form-check-input" type="checkbox" id="visibilityCheck" name="visibilityCheck" onclick="toggleVisibility()")
-                    button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                        h4 Adressen
-                        input(type="text" class="form-control" id="domainField" name="domainField" value=entryData.urls)
-                div(class="col col-lg-2 bg-dark text-white rounded p-3")
-                        h4 Notizen
-                        input(type="text" class="form-control" id="annotField" name="annotField" value=entryData.annot)
+    form(action="/updatePasswordEntry/"+entryData.eid method="post")
+        div(class="row mx-1")
+            div(class="col")
+                label(for="inputUsername") Nutzername
+                input(type="text", class="form-control" id="inputUsername" name="usernameField" value=entryData.username)
+            div(class="col")
+                label(for="inputUsername") Passwort
+                input(type="password", class="form-control" id="inputPassword" name="passwordField" value=entryData.password)
+                label(for="visibilityCheck") Passwort anzeigen
+                input(class="form-check-input" type="checkbox" id="visibilityCheck"  name="visibilityCheck" onclick="toggleVisibility()")
+                button(type="button" class="btn btn-secondary" onclick="copyPassword()") Copy
+            div(class="col")
+                label(for="inputDomains") URLs
+                input(type="text", class="form-control" id="inputDomains" name="domainField" value=entryData.urls)
+            div(class="col")
+                label(for="inputUsername") Notizen
+                input(type="text", class="form-control" id="inputAnnot" name="annotField" value=entryData.annot)
+        div(class="form-group mx-3 my-1")
             button(type="submit", class="btn btn-primary") Speichern
-            a(href="/dashboard")
-                button(class="btn btn-secondary") Abbrechen
+    a(href="/dashboard")
+        button(class="btn btn-secondary") Abbrechen
 
     form(action="/deleteEntry/"+entryData.eid method="post")
         button(type="submit" class="btn btn-danger") Löschen
@@ -53,6 +53,7 @@ block content
 
     script.
         function toggleVisibility() {
+            console.log("Test1");
             if(document.getElementById("visibilityCheck").checked) {
                 document.getElementById("passwordField").type="text";
             }
@@ -62,6 +63,8 @@ block content
         }
 
         function copyPassword() {
+            console.log("Test2");
+        }
             navigator.clipboard.writeText(document.getElementById("passwordField").value);
         }
 
@@ -100,7 +103,7 @@ block content
                 password = password + chars[Math.floor(Math.random() * (chars.length - 1 - 1))];
             }
 
-            document.getElementById("password").value = password;
+            document.getElementById("passwordField").value = password;
 
             console.log(password);
             return password;

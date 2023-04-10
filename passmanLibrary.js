@@ -90,6 +90,7 @@ module.exports = {
     login,
     getPasswordEntries,
     addPasswordEntry,
+    updatePasswordEntry,
     searchPasswordEntries,
     getPasswordById,
     deletePasswordEntry,

@@ -89,15 +89,14 @@ app.get("/entry/:eId", function(req, res) {
     });
 });
 
-app.post("/updateEntry/:eId", function(req, res) {
-    console.log(req);
-    const id = req.params.eId;
+app.post("/updatePasswordEntry/:eid", urlencodedParser, function (req, res) {
+    const id = req.params.eid;
     const domain = req.body.domainField;
     const annot = req.body.annotField;
     const passwordEncrypted = req.body.passwordField;
     const username = req.body.usernameField;
 
-    passmanLibrary.addPasswordEntry(id, domain, username, annot, passwordEncrypted, session).then(r =>
+    passmanLibrary.updatePasswordEntry(id, domain, username, annot, passwordEncrypted, session).then(r =>
         res.redirect("/dashboard")
     ).catch(error => {
         res.render("error", {
