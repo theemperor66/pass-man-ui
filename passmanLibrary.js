@@ -77,13 +77,6 @@ async function deletePasswordEntry(id, session_cookie) {
     }
 }
 
-function deleteCookie(name) {
-    document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/;';
-}
-
-function logout() {
-    deleteCookie('SESSION');
-}
 
 module.exports = {
     register,
@@ -94,6 +87,5 @@ module.exports = {
     searchPasswordEntries,
     getPasswordById,
     deletePasswordEntry,
-    logout
 };
 

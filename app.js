@@ -187,8 +187,6 @@ app.get("/passwordGenerator", function (req, res) {
 });
 
 app.get("/logout", function (req, res) {
-    passmanLibrary.logout();
-
     session = "";
 
     res.redirect("/");
