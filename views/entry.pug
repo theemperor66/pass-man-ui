@@ -3,7 +3,7 @@ extends layout
 block content
     h1 Eintrag
     div(class="row border border-secondary p-2 m-2")
-        form(action="/updateEntry/" + entryData.eid method="post")
+        form(action="/updatePasswordEntry/" + entryData.eid method="post")
             div(class="row justify-content-between")
                 div(class="col col-lg-2 bg-dark text-white rounded p-3")
                     h4 Nutzername
